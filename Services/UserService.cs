@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Test_Task_URL_shortener_Backend.Services
 {
-    interface IUserService
+    public interface IUserService
     {
         public Task<UserResponseDTO> CreateUserAsync(UserRegistrationDTO userRegistrationDTO);
         public Task<UserResponseDTO> AuthenticateUserAsync(UserLoginDTO userLoginDTO);
         public Task<UserResponseDTO> GetUserByEmailAsync(string email);
-        public Task<UserResponseDTO> GetUserByIdAsync(Guid userId);
+        public Task<UserResponseDTO> GetUserByIdAsync(string userId);
     }
     class UserService : IUserService
     {
@@ -30,6 +30,12 @@ namespace Test_Task_URL_shortener_Backend.Services
         }
         public async Task<UserResponseDTO> CreateUserAsync(UserRegistrationDTO userRegistrationDTO)
         {
+            bool isUnique = await _context.Users.FirstOrDefaultAsync(u => u.Email == userRegistrationDTO.Email) != null;
+            if (isUnique)
+            {
+                throw new Exception("409");
+            }
+
             var user = new User
             {
                 Id = Guid.NewGuid(),
@@ -44,7 +50,7 @@ namespace Test_Task_URL_shortener_Backend.Services
 
             var token = GenerateToken(user);
 
-            var userResponse = new UserResponseDTO(user, token.ToString());
+            var userResponse = new UserResponseDTO(user, new JwtSecurityTokenHandler().WriteToken(token));
             return userResponse;
         }
         public async Task<UserResponseDTO> AuthenticateUserAsync(UserLoginDTO userLoginDTO)
@@ -58,14 +64,13 @@ namespace Test_Task_URL_shortener_Backend.Services
             if (BCrypt.Net.BCrypt.Verify(userLoginDTO.Password, user.PasswordHash))
             {
                 var token = GenerateToken(user);
-                return new UserResponseDTO(user, token.ToString());
+                return new UserResponseDTO(user, new JwtSecurityTokenHandler().WriteToken(token));
             }
             else
             {
                 throw new Exception("401");
             }
         }
-        [Authorize]
         public async Task<UserResponseDTO> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -75,9 +80,9 @@ namespace Test_Task_URL_shortener_Backend.Services
             }
             return new UserResponseDTO(user, "");
         }
-        public async Task<UserResponseDTO> GetUserByIdAsync(Guid userId)
+        public async Task<UserResponseDTO> GetUserByIdAsync(string userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
             if (user == null)
             {
                 throw new Exception("404");

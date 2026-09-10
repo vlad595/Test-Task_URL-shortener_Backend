@@ -11,13 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddOpenApi();
+
 builder.Services.AddScoped<IUserService, UserService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<URLShortenerContext>(options => {
     options.UseNpgsql(connectionString);
-    options.LogTo(Console.WriteLine);
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
