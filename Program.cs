@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
+builder.Services.AddScoped<IUrlService, UrlService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddControllers();
 

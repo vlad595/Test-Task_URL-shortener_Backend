@@ -10,9 +10,10 @@ namespace Test_Task_URL_shortener_Backend.Services
 {
     public interface IUrlService
     {
-        public Task<UrlResponseDTO> CreateUrl(string originalUrl, Guid authorId);
+        public Task<UrlResponseDTO> CreateUrl(string originalUrl, string authorId);
         public Task<List<UrlResponseDTO>> GetAllUrls();
         public Task<UrlResponseDTO> FindUrl(string originalUrl);
+        public Task<UrlResponseDTO> RedirectTo(string shortenedUrl);
     }
     public class UrlService: IUrlService
     {
@@ -21,7 +22,7 @@ namespace Test_Task_URL_shortener_Backend.Services
         {
             _context = context;
         }
-        public async Task<UrlResponseDTO> CreateUrl(string originalUrl, Guid authorId)
+        public async Task<UrlResponseDTO> CreateUrl(string originalUrl, string authorId)
         {
             var newUrl = new Url
             {
@@ -30,7 +31,7 @@ namespace Test_Task_URL_shortener_Backend.Services
                 CreatedAt = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow.AddDays(30),
                 ClickCount = 0,
-                AuthorId = authorId,
+                AuthorId = Guid.Parse(authorId),
                 ShortenedUrl = EncodeUrl(originalUrl)
             };
 
@@ -50,6 +51,19 @@ namespace Test_Task_URL_shortener_Backend.Services
             var url = await _context.Urls.FirstOrDefaultAsync(url => url.OriginalUrl == originalUrl);
             if (url != null)
             {
+                return new UrlResponseDTO(url);
+            }
+            else
+            {
+                throw new Exception("404");
+            }
+        }
+        public async Task<UrlResponseDTO> RedirectTo(string shortenedUrl)
+        {
+            var url = await _context.Urls.FirstOrDefaultAsync(url => url.ShortenedUrl == shortenedUrl);
+            if (url != null)
+            {
+                url.ClickCount++;
                 return new UrlResponseDTO(url);
             }
             else
