@@ -12,8 +12,8 @@ namespace Test_Task_URL_shortener_Backend.Services
     {
         public Task<UrlResponseDTO> CreateUrl(string originalUrl, string authorId);
         public Task<List<UrlResponseDTO>> GetAllUrls();
-        public Task<UrlResponseDTO> FindUrl(string originalUrl);
         public Task<UrlResponseDTO> RedirectTo(string shortenedUrl);
+        public Task<UrlResponseDTO> DeleteUrl(Guid urlId, string authorId, UserRole role);
     }
     public class UrlService: IUrlService
     {
@@ -46,11 +46,13 @@ namespace Test_Task_URL_shortener_Backend.Services
             var urlsResponse = urls.Select(url => new UrlResponseDTO(url)).ToList();
             return urlsResponse;
         }
-        public async Task<UrlResponseDTO> FindUrl(string originalUrl)
+        public async Task<UrlResponseDTO> RedirectTo(string shortenedUrl)
         {
-            var url = await _context.Urls.FirstOrDefaultAsync(url => url.OriginalUrl == originalUrl);
-            if (url != null)
+            var url = await _context.Urls.FirstOrDefaultAsync(url => url.ShortenedUrl == shortenedUrl);
+            if (url != null && (url.ExpirationDate != null || url.ExpirationDate > DateTime.UtcNow))
             {
+                url.ClickCount++;
+                await _context.SaveChangesAsync();
                 return new UrlResponseDTO(url);
             }
             else
@@ -58,13 +60,22 @@ namespace Test_Task_URL_shortener_Backend.Services
                 throw new Exception("404");
             }
         }
-        public async Task<UrlResponseDTO> RedirectTo(string shortenedUrl)
+        public async Task<UrlResponseDTO> DeleteUrl(Guid urlId, string authorId, UserRole role)
         {
-            var url = await _context.Urls.FirstOrDefaultAsync(url => url.ShortenedUrl == shortenedUrl);
+            Url? url = await _context.Urls.FirstOrDefaultAsync(url => url.Id == urlId);
             if (url != null)
             {
-                url.ClickCount++;
-                return new UrlResponseDTO(url);
+                if (authorId != url.AuthorId.ToString() || role != UserRole.Admin)
+                {
+                    throw new Exception("403");
+                }
+                else if (url.ExpirationDate > DateTime.UtcNow)
+                {
+                    _context.Urls.Remove(url);
+                    await _context.SaveChangesAsync();
+                    return new UrlResponseDTO(url);
+                }
+                else throw new Exception("404");
             }
             else
             {

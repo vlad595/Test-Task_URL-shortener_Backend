@@ -9,6 +9,7 @@ namespace Test_Task_URL_shortener_Backend.DTO
     }
     public class UrlResponseDTO
     {
+        public Guid Id {get;set;}
         public string OriginalUrl {get;set;}
         public string ShortenedUrl { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -17,6 +18,7 @@ namespace Test_Task_URL_shortener_Backend.DTO
         public Guid AuthorId {get;set;}
         public UrlResponseDTO(Url url)
         {
+            Id = url.Id;
             OriginalUrl = url.OriginalUrl;
             ShortenedUrl = url.ShortenedUrl;
             CreatedAt = url.CreatedAt;
