@@ -71,5 +71,12 @@ namespace Test_Task_URL_shortener_Backend.Controllers
                 return NotFound("User does not found");
             }
         }
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _service.GetAllUsers();
+            return Ok(result);
+        }
     }
 }

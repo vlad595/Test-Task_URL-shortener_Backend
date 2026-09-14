@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Test_Task_URL_shortener_Backend.Services
 {
@@ -18,6 +19,7 @@ namespace Test_Task_URL_shortener_Backend.Services
         public Task<UserResponseDTO> AuthenticateUserAsync(UserLoginDTO userLoginDTO);
         public Task<UserResponseDTO> GetUserByEmailAsync(string email);
         public Task<UserResponseDTO> GetUserByIdAsync(string userId);
+        public Task<List<UserResponseDTO>> GetAllUsers();
     }
     class UserService : IUserService
     {
@@ -89,13 +91,22 @@ namespace Test_Task_URL_shortener_Backend.Services
             }
             return new UserResponseDTO(user, "");
         }
+        public async Task<List<UserResponseDTO>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+
+            var userResponse = users.Select(user => new UserResponseDTO(user, "")).ToList();
+
+            return userResponse;
+        }
         JwtSecurityToken GenerateToken(User user)
         {
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString())  
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
