@@ -32,7 +32,7 @@ namespace Test_Task_URL_shortener_Backend.Services
                 ExpirationDate = DateTime.UtcNow.AddDays(30),
                 ClickCount = 0,
                 AuthorId = Guid.Parse(authorId),
-                ShortenedUrl = "http://localhost:5059/" + EncodeUrl(originalUrl)
+                ShortenedUrl = EncodeUrl(originalUrl)
             };
 
             _context.Urls.Add(newUrl);
@@ -43,7 +43,11 @@ namespace Test_Task_URL_shortener_Backend.Services
         public async Task<List<UrlResponseDTO>> GetAllUrls()
         {
             var urls = await _context.Urls.ToListAsync();
-            var urlsResponse = urls.Select(url => new UrlResponseDTO(url)).ToList();
+            var urlsResponse = urls.Select(url => {
+                var dto = new UrlResponseDTO(url);
+                dto.ShortenedUrl = "http://localhost:5059/" + dto.ShortenedUrl;
+                return dto;
+            }).ToList();
             return urlsResponse;
         }
         public async Task<UrlResponseDTO> RedirectTo(string shortenedUrl)
