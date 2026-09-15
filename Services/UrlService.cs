@@ -38,7 +38,9 @@ namespace Test_Task_URL_shortener_Backend.Services
             _context.Urls.Add(newUrl);
             await _context.SaveChangesAsync();
 
-            return new UrlResponseDTO(newUrl);
+            var dto = new UrlResponseDTO(newUrl);
+            dto.ShortenedUrl = "http://localhost:5059/" + dto.ShortenedUrl;
+            return dto;
         }
         public async Task<List<UrlResponseDTO>> GetAllUrls()
         {
@@ -69,7 +71,7 @@ namespace Test_Task_URL_shortener_Backend.Services
             Url? url = await _context.Urls.FirstOrDefaultAsync(url => url.Id == urlId);
             if (url != null)
             {
-                if (authorId != url.AuthorId.ToString() || role != UserRole.Admin)
+                if (authorId != url.AuthorId.ToString() && role != UserRole.Admin)
                 {
                     throw new Exception("403");
                 }
@@ -77,7 +79,9 @@ namespace Test_Task_URL_shortener_Backend.Services
                 {
                     _context.Urls.Remove(url);
                     await _context.SaveChangesAsync();
-                    return new UrlResponseDTO(url);
+                    var dto = new UrlResponseDTO(url);
+                    dto.ShortenedUrl = "http://localhost:5059/" + dto.ShortenedUrl;
+                    return dto;
                 }
                 else throw new Exception("404");
             }
