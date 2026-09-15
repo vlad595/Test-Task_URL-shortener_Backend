@@ -1,0 +1,141 @@
+@page "/"
+@model Test_Task_URL_shortener_Backend.Pages.IndexModel
+@{
+    ViewData["Title"] = "URL Shortener";
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 100px 20px 60px;
+            max-width: 800px;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .primary-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        .primary-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background-color: transparent;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .secondary-btn:hover {
+            border-color: #d1d5db;
+            background-color: #f3f4f6;
+        }
+
+        .features-section {
+            display: flex;
+            gap: 24px;
+            padding: 40px 20px;
+            max-width: 1000px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f3f4f6;
+            flex: 1;
+            min-width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <section class="hero-section">
+            <h1>Make every link count.</h1>
+            <p class="hero-subtitle">
+                A simple, fast, and secure URL shortener. Transform long, ugly links into clean, shareable URLs in seconds.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="http://localhost:4200/dashboard" class="btn primary-btn">Get Started for Free</a>
+                <a href="http://localhost:4200/login" class="btn secondary-btn">Log In</a>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="feature-card">
+                <h3>⚡ Lightning Fast</h3>
+                <p>Shorten your URLs instantly. Our optimized infrastructure ensures your links are ready before you blink.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Track Clicks</h3>
+                <p>Monitor your link performance. See exactly how many times your audience clicked on your shortened URLs.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔒 Secure & Reliable</h3>
+                <p>Your data is safe with us. We provide reliable redirects with 99.9% uptime and strict privacy standards.</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
