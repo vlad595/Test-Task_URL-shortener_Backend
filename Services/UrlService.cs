@@ -32,7 +32,7 @@ namespace Test_Task_URL_shortener_Backend.Services
                 ExpirationDate = DateTime.UtcNow.AddDays(30),
                 ClickCount = 0,
                 AuthorId = Guid.Parse(authorId),
-                ShortenedUrl = EncodeUrl(originalUrl)
+                ShortenedUrl = "http://localhost:5059/" + EncodeUrl(originalUrl)
             };
 
             _context.Urls.Add(newUrl);
