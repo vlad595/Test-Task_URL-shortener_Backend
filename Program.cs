@@ -11,6 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDevClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()                     
+              .AllowAnyMethod();                    
+    });
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -65,6 +75,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+
+app.UseCors("AllowAngularDevClient");
 
 app.UseAuthentication();
 app.UseAuthorization();
